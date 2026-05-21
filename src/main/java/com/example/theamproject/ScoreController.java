@@ -25,6 +25,7 @@ public class ScoreController {
     private List<UserScore> leaderboard = new ArrayList<>() {{
     }};
 
+    private final String FILE_PATH = "/Users/wjdals0314/Desktop/intellij/The-Am-project/userId, score저장/leaderboard.text";
     // 3. Unity 또는 Postman에서 점수 받기 (POST)
     @PostMapping("/submit-score")
     public String submitScore(@RequestParam String userId, @RequestParam int score) {
