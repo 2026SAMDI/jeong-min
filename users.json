@@ -1,0 +1,9 @@
+[ {
+  "userId" : "김래현",
+  "password" : "1234",
+  "highScore" : 100
+}, {
+  "userId" : "홍정민",
+  "password" : "0314",
+  "highScore" : 0
+} ]
