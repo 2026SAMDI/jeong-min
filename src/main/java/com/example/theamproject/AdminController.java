@@ -1,9 +1,19 @@
 package com.example.theamproject;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AdminController {
+
+    // =========================
+    // 암호화 도구 주입
+    // =========================
+    private final PasswordEncoder passwordEncoder;
+
+    public AdminController(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // =========================
     // 특정 유저 삭제
@@ -12,18 +22,12 @@ public class AdminController {
     public String deleteUser(
             @RequestParam String userId
     ) {
-
-        boolean removed =
-                UserController.users.removeIf(
-                        user ->
-                                user.userId.trim()
-                                        .equals(userId.trim())
-                );
+        boolean removed = UserController.users.removeIf(
+                user -> user.userId.trim().equals(userId.trim())
+        );
 
         if (removed) {
-
             UserController.saveUsers();
-
             return userId + " 삭제 완료";
         }
 
@@ -37,7 +41,6 @@ public class AdminController {
     public String resetLeaderboard() {
 
         UserController.users.clear();
-
         UserController.saveUsers();
 
         return "전체 초기화 완료";
@@ -51,45 +54,36 @@ public class AdminController {
             @RequestParam String userId,
             @RequestParam int score
     ) {
-
-        for (User user :
-                UserController.users) {
-
+        for (User user : UserController.users) {
             if (user.userId.equals(userId)) {
 
                 user.highScore = score;
-
                 UserController.saveUsers();
 
                 return "점수 수정 완료";
             }
         }
-
         return "유저 없음";
     }
 
     // =========================
-    // 비밀번호 변경
+    // 비밀번호 변경 (새 비밀번호 암호화 적용)
     // =========================
     @PostMapping("/change-password")
     public String changePassword(
             @RequestParam String userId,
             @RequestParam String newPassword
     ) {
-
-        for (User user :
-                UserController.users) {
-
+        for (User user : UserController.users) {
             if (user.userId.equals(userId)) {
 
-                user.password = newPassword;
-
+                // ⭐ 관리자가 변경하는 새 비밀번호도 암호화해서 저장!
+                user.password = passwordEncoder.encode(newPassword);
                 UserController.saveUsers();
 
                 return "비밀번호 변경 완료";
             }
         }
-
         return "유저 없음";
     }
 }
